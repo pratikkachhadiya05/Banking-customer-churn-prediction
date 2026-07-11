@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }} — Model Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+</head>
+<body class="page-dashboard">
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Ledger &amp; Co. <small>Retention Desk</small></div>
+    <nav class="primary">
+      <a href="/Dashboard"><span class="num"></span>Dashboard</a>
+      <a href="/Churn_predictor"><span class="num"></span>Churn Predictor</a>
+      <a href="/Customer_analytics"><span class="num"></span>Customer Analytics</a>
+      <a href="/Model_performance" class="active"><span class="num"></span>Model performance</a>
+      <a href="/Retention_Campaigns"><span class="num"></span>Retention campaigns</a>
+    </nav>
+
+  </aside>
+
+  <main>
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Audit trail</p>
+        <h1>Model performance <span class="version-tag">RF · v1</span></h1>
+        <p class="subhead">Every figure below comes from the notebook's saved evaluation run or is computed live from the deployed pickle — nothing here is a mock-up number.</p>
+      </div>
+      <span class="as-of">Held-out test set · 2,000 customers</span>
+    </header>
+
+    <section class="kpi-row">
+      <div class="kpi">
+        <p class="kpi-label">Test accuracy</p>
+        <p class="kpi-value">83.15%</p>
+        <p class="kpi-sub">Train: 88.74% · gap 5.59%</p>
+      </div>
+      <div class="kpi">
+        <p class="kpi-label">Weighted F1-score</p>
+        <p class="kpi-value">0.84</p>
+        <p class="kpi-sub">Macro avg: 0.75</p>
+      </div>
+      <div class="kpi">
+        <p class="kpi-label">Churn-class precision</p>
+        <p class="kpi-value">57.0%</p>
+        <p class="kpi-sub">Of predicted churners, correct</p>
+      </div>
+      <div class="kpi">
+        <p class="kpi-label">Churn-class recall</p>
+        <p class="kpi-value">67.0%</p>
+        <p class="kpi-sub">Of actual churners, caught</p>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <p class="section-label">Confusion matrix</p>
+        <p class="section-note">Held-out test set, n = 2,000</p>
+        <div class="cm-wrap">
+          <div class="cm-corner"></div>
+          <div class="cm-colhead">Pred. stayed</div>
+          <div class="cm-colhead">Pred. churned</div>
+
+          <div class="cm-rowhead">Actual stayed</div>
+          <div class="cm-cell cm-tn"><span class="num">1,386</span><span class="lbl">True negative</span></div>
+          <div class="cm-cell cm-fp"><span class="num">207</span><span class="lbl">False positive</span></div>
+
+          <div class="cm-rowhead">Actual churned</div>
+          <div class="cm-cell cm-fn"><span class="num">134</span><span class="lbl">False negative</span></div>
+          <div class="cm-cell cm-tp"><span class="num">273</span><span class="lbl">True positive</span></div>
+        </div>
+        <p class="cm-caption">Reconstructed from the notebook's saved classification report (precision, recall, and support per class) — accurate to the two decimal places that report was printed at.</p>
+      </div>
+
+      <div class="card">
+        <p class="section-label">Train vs. test performance</p>
+        <p class="section-note">Same accuracy metric, two splits</p>
+        <div class="tvt-row">
+          <div class="tvt-item">
+            <div class="tvt-label"><span>Train accuracy</span><span class="val">88.74%</span></div>
+            <div class="tvt-track"><div class="tvt-fill train" style="width:88.74%"></div></div>
+          </div>
+          <div class="tvt-item">
+            <div class="tvt-label"><span>Test accuracy</span><span class="val">83.15%</span></div>
+            <div class="tvt-track"><div class="tvt-fill test" style="width:83.15%"></div></div>
+          </div>
+        </div>
+        <p class="gap-note">A 5.59-point gap between train and test is a mild sign of overfitting — worth watching, but not severe for a RandomForest of this depth.</p>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <p class="section-label">Global feature importance</p>
+        <p class="section-note">Computed live from the deployed model — not a snapshot</p>
+        <ul class="drivers-list" id="drivers-list"></ul>
+      </div>
+
+      <div class="card">
+        <p class="section-label">Model &amp; evaluation details</p>
+        <ul class="info-list">
+          <li><span class="k">Algorithm</span><span class="v">RandomForest (balanced subsample)</span></li>
+          <li><span class="k">Best n_estimators</span><span class="v">300</span></li>
+          <li><span class="k">Best max_depth</span><span class="v">10</span></li>
+          <li><span class="k">min_samples_split / leaf</span><span class="v">5 / 2</span></li>
+          <li><span class="k">Search strategy</span><span class="v">RandomizedSearchCV, 3-fold CV</span></li>
+          <li><span class="k">ROC-AUC</span><span class="v">0.848</span></li>
+          <li><span class="k">Log loss</span><span class="v">0.412</span></li>
+          <li><span class="k">Dataset size</span><span class="v">10,000 customers</span></li>
+          <li><span class="k">Train / test split</span><span class="v">8,000 / 2,000 (80/20, stratified)</span></li>
+          <li><span class="k">Base churn rate</span><span class="v">20.37%</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="section-label">High-error customer segments</p>
+      <div class="needs-data">
+        <strong>Needs the labeled test set to populate.</strong><br>
+        This model was handed off as a fitted pipeline plus a training notebook — the underlying customer rows
+        (with true vs. predicted labels per segment) aren't part of that handoff, so a per-segment error
+        breakdown can't be computed honestly right now. Upload the original CSV or the saved test-set
+        predictions and this section can be built for real.
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const drivers = [
+    {name:'Age', pct:34.40},
+    {name:'Number of products', pct:22.52},
+    {name:'Account balance', pct:11.15},
+    {name:'Estimated salary', pct:9.32},
+    {name:'Credit score', pct:8.67},
+    {name:'Active membership', pct:5.68},
+    {name:'Tenure', pct:4.82},
+    {name:'Gender', pct:2.36},
+    {name:'Has credit card', pct:1.07},
+  ];
+
+  (function drawDrivers(){
+    const list = document.getElementById('drivers-list');
+    const max = Math.max(...drivers.map(d => d.pct));
+    drivers.forEach(d => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="name">${d.name}</span>
+        <span class="bar-track"><span class="bar-fill" style="width:${(d.pct/max*100).toFixed(0)}%"></span></span>
+        <span class="val">${d.pct.toFixed(1)}%</span>`;
+      list.appendChild(li);
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }} — Retention Campaigns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="page-dashboard">
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Ledger &amp; Co. <small>Retention Desk</small></div>
+    <nav class="primary">
+      <a href="/Dashboard"><span class="num"></span>Dashboard</a>
+      <a href="/Churn_predictor"><span class="num"></span>Churn Predictor</a>
+      <a href="/Customer_analytics"><span class="num"></span>Customer Analytics</a>
+      <a href="/Model_performance"><span class="num"></span>Model performance</a>
+      <a href="/Retention_Campaigns" class="active"><span class="num"></span>Retention campaigns</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Playbook</p>
+        <h1>Retention campaigns</h1>
+        <p class="subhead">The offers currently running, how they're converting, and who's next in line for outreach.</p>
+      </div>
+      <span class="as-of">Sample data · last refreshed today</span>
+    </header>
+
+    <section class="kpi-row">
+      <div class="kpi">
+        <p class="kpi-label">Active campaigns</p>
+        <p class="kpi-value">4</p>
+        <p class="kpi-sub">2 scheduled, 3 completed this quarter</p>
+      </div>
+      <div class="kpi">
+        <p class="kpi-label">Customers targeted</p>
+        <p class="kpi-value">8,213</p>
+        <p class="kpi-sub">Across all live campaigns</p>
+      </div>
+      <div class="kpi">
+        <p class="kpi-label">Avg. conversion rate</p>
+        <p class="kpi-value">34.6%</p>
+        <p class="kpi-sub">Accepted the offer or stayed active</p>
+      </div>
+      <div class="kpi">
+        <p class="kpi-label">Estimated value retained</p>
+        <p class="kpi-value">₹2.4 Cr</p>
+        <p class="kpi-sub">Modeled from converted accounts</p>
+      </div>
+    </section>
+
+    <section class="card" style="margin-bottom:20px;">
+      <p class="section-label">Conversion rate — last 8 weeks</p>
+      <svg id="trend-svg" viewBox="0 0 860 200" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#17241F" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#17241F" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g id="trend-gridlines"></g>
+        <path id="trend-fill" class="trend-fill"></path>
+        <path id="trend-line" class="trend-path"></path>
+        <g id="trend-dots"></g>
+        <g id="trend-axis"></g>
+      </svg>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <div class="section-head-row">
+          <p class="section-label">Live &amp; scheduled campaigns</p>
+          <select class="filter"><option>All statuses</option><option>Active</option><option>Scheduled</option><option>Completed</option></select>
+        </div>
+        <table class="campaigns">
+          <thead><tr><th>Campaign</th><th>Status</th><th>Targeted</th><th>Conversion</th></tr></thead>
+          <tbody id="campaigns-body"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-head-row">
+          <p class="section-label">Outreach queue this week</p>
+        </div>
+        <ul class="queue-list" id="queue-list"></ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  // ---- Sample data (swap for a live feed later) ----
+  const weeks = ['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8'];
+  const conversionTrend = [28.4, 30.1, 29.5, 32.0, 31.2, 33.8, 35.0, 34.6];
+
+  const campaigns = [
+    {name:'High-Yield Savings Offer', segment:'Inactive, high balance', channel:'Email + call', status:'active', targeted:2140, converted:812},
+    {name:'Loyalty Welcome Bonus', segment:'Active, low tenure', channel:'In-app', status:'active', targeted:1860, converted:920},
+    {name:'Fee Waiver — Multi-product', segment:'Multi-product, low activity', channel:'Email', status:'active', targeted:2540, converted:640},
+    {name:'Relationship Manager Check-in', segment:'High risk score > 70', channel:'Phone', status:'active', targeted:1673, converted:471},
+    {name:'Credit Line Review', segment:'Single product, high balance', channel:'Email', status:'scheduled', targeted:1420, converted:0},
+    {name:'Anniversary Rewards', segment:'6+ year tenure', channel:'SMS', status:'scheduled', targeted:980, converted:0},
+  ];
+
+  const queue = [
+    {name:'A. Okafor', id:'#54210', score:82, level:'High', campaign:'Relationship Manager Check-in'},
+    {name:'M. Zeidler', id:'#61183', score:78, level:'High', campaign:'High-Yield Savings Offer'},
+    {name:'I. Soctent', id:'#43977', score:71, level:'Medium', campaign:'Fee Waiver — Multi-product'},
+    {name:'R. Castillo', id:'#39012', score:69, level:'Medium', campaign:'Loyalty Welcome Bonus'},
+    {name:'P. Nakamura', id:'#28850', score:74, level:'High', campaign:'High-Yield Savings Offer'},
+    {name:'L. Johnson', id:'#71542', score:80, level:'High', campaign:'Credit Line Review'},
+    {name:'S. Williams', id:'#82631', score:67, level:'Medium', campaign:'Anniversary Rewards'},
+    {name:'D. Fernandez', id:'#93420', score:85, level:'High', campaign:'Relationship Manager Check-in'},
+
+  ];
+
+  // ---- Trend chart ----
+  (function drawTrend(){
+    const W = 860, H = 200, padL = 30, padR = 10, padT = 14, padB = 26;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+    const maxV = 40;
+    const stepX = plotW / (conversionTrend.length - 1);
+
+    const points = conversionTrend.map((v, i) => ({
+      x: padL + i * stepX,
+      y: padT + plotH - (v / maxV) * plotH,
+      v, w: weeks[i]
+    }));
+
+    const gridG = document.getElementById('trend-gridlines');
+    [0,10,20,30,40].forEach(v => {
+      const y = padT + plotH - (v/maxV)*plotH;
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', padL); line.setAttribute('x2', W-padR);
+      line.setAttribute('y1', y); line.setAttribute('y2', y);
+      line.setAttribute('class','grid-row');
+      gridG.appendChild(line);
+      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.setAttribute('x', 6); txt.setAttribute('y', y+3);
+      txt.setAttribute('class','axis-label');
+      txt.textContent = v + '%';
+      gridG.appendChild(txt);
+    });
+
+    const linePath = points.map((p,i) => (i===0?'M':'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+    document.getElementById('trend-line').setAttribute('d', linePath);
+    const fillPath = linePath + ` L${points[points.length-1].x.toFixed(1)},${(padT+plotH).toFixed(1)} L${points[0].x.toFixed(1)},${(padT+plotH).toFixed(1)} Z`;
+    document.getElementById('trend-fill').setAttribute('d', fillPath);
+
+    const dotsG = document.getElementById('trend-dots');
+    points.forEach(p => {
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', 3);
+      c.setAttribute('class', 'trend-dot');
+      dotsG.appendChild(c);
+    });
+
+    const axisG = document.getElementById('trend-axis');
+    points.forEach(p => {
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', p.x); t.setAttribute('y', H - 6);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('class','axis-label');
+      t.textContent = p.w;
+      axisG.appendChild(t);
+    });
+  })();
+
+  // ---- Campaigns table ----
+  (function drawCampaigns(){
+    const body = document.getElementById('campaigns-body');
+    campaigns.forEach(c => {
+      const rate = c.targeted ? (c.converted / c.targeted * 100) : 0;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <div class="campaign-name">${c.name}</div>
+          <div class="campaign-sub">${c.segment} · ${c.channel}</div>
+        </td>
+        <td><span class="status-pill ${c.status}">${c.status}</span></td>
+        <td>${c.targeted.toLocaleString()}</td>
+        <td>
+          <div class="conv-cell">
+            <div class="conv-track"><div class="conv-fill" style="width:${rate.toFixed(0)}%"></div></div>
+            <span class="conv-val">${c.status === 'scheduled' ? '—' : rate.toFixed(1) + '%'}</span>
+          </div>
+        </td>`;
+      body.appendChild(tr);
+    });
+  })();
+
+  // ---- Outreach queue ----
+  (function drawQueue(){
+    const list = document.getElementById('queue-list');
+    queue.forEach(q => {
+      const initials = q.name.split(' ').map(p => p[0]).join('');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="avatar">${initials}</span>
+        <div>
+          <div class="queue-name">${q.name} <span class="campaign-sub">${q.id}</span></div>
+          <div class="queue-meta">${q.campaign}</div>
+        </div>
+        <div class="queue-right">
+          <span class="risk-tag ${q.level}">${q.score}</span>
+          <button class="contact-btn" type="button">Mark contacted</button>
+        </div>`;
+      const btn = li.querySelector('.contact-btn');
+      btn.addEventListener('click', () => {
+        btn.textContent = 'Contacted ✓';
+        btn.classList.add('done');
+        btn.disabled = true;
+      });
+      list.appendChild(li);
+    });
+  })();
+</script>
+</body>
+</htm

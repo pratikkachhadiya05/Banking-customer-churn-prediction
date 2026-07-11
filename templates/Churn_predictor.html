@@ -1,634 +1,402 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ title }} — Predictor</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#17241F;
-    --ink-soft:#25352E;
-    --paper:#E6E8E1;
-    --panel:#F4F5F0;
-    --gold:#9C7A2E;
-    --risk:#A63D33;
-    --safe:#2F6E4F;
-    --line:#C9CABD;
-    --text:#20291F;
-    --muted:#5C6B5D;
-    --radius:14px;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--paper);
-    color:var(--text);
-    font-family:'Inter',system-ui,sans-serif;
-    min-height:100vh;
-  }
-  a{color:inherit;}
-  .app{
-    display:grid;
-    grid-template-columns:240px 1fr;
-    min-height:100vh;
-  }
-  /* ---------- Sidebar ---------- */
-  .sidebar{
-    background:var(--ink);
-    color:var(--paper);
-    padding:28px 22px;
-    display:flex;
-    flex-direction:column;
-    gap:32px;
-  }
-  .brand{
-    font-family:'Fraunces',serif;
-    font-size:1.25rem;
-    font-weight:600;
-    letter-spacing:.02em;
-    display:flex;
-    align-items:baseline;
-    gap:8px;
-  }
-  .brand small{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:.62rem;
-    color:var(--gold);
-    letter-spacing:.14em;
-    text-transform:uppercase;
-  }
-  nav.primary{
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-  }
-  nav.primary a{
-    text-decoration:none;
-    font-size:.88rem;
-    padding:10px 12px;
-    border-radius:8px;
-    color:#C7CEC4;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    transition:background .15s ease, color .15s ease;
-  }
-  nav.primary a:hover{background:rgba(255,255,255,.06); color:var(--paper);}
-  nav.primary a.active{
-    background:var(--ink-soft);
-    color:var(--paper);
-    box-shadow:inset 3px 0 0 var(--gold);
-  }
-  nav.primary .num{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:.68rem;
-    color:var(--gold);
-    width:16px;
-  }
-  .sidebar-foot{
-    margin-top:auto;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:.68rem;
-    color:#7C8A7B;
-    line-height:1.5;
-    border-top:1px solid rgba(255,255,255,.1);
-    padding-top:16px;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} — Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
 
-  /* ---------- Main ---------- */
-  main{
-    padding:40px 48px 60px;
-    max-width:1180px;
-  }
-  header.page-head{
-    margin-bottom:28px;
-  }
-  .eyebrow{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:.7rem;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color:var(--gold);
-    margin:0 0 6px;
-  }
-  h1{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:2rem;
-    margin:0 0 8px;
-  }
-  .subhead{
-    color:var(--muted);
-    font-size:.95rem;
-    max-width:56ch;
-    margin:0;
-  }
-
-  .layout{
-    display:grid;
-    grid-template-columns:1.3fr 1fr;
-    gap:28px;
-    align-items:start;
-  }
-
-  .card{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:28px;
-  }
-
-  /* ---------- Form ---------- */
-  .section-label{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:.68rem;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--muted);
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin:26px 0 14px;
-  }
-  .section-label:first-of-type{margin-top:0;}
-  .section-label::after{
-    content:"";
-    flex:1;
-    height:1px;
-    background:repeating-linear-gradient(to right, var(--gold) 0 4px, transparent 4px 9px);
-    opacity:.65;
-  }
-  .grid-fields{
-    display:grid;
-    grid-template-columns:repeat(2, 1fr);
-    gap:16px 20px;
-  }
-  .field{display:flex; flex-direction:column; gap:6px;}
-  .field.full{grid-column:1 / -1;}
-  label{
-    font-size:.78rem;
-    font-weight:600;
-    color:var(--ink-soft);
-  }
-  .hint{font-size:.72rem; color:var(--muted); font-weight:400;}
-  input, select{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:.9rem;
-    padding:10px 12px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:#fff;
-    color:var(--text);
-  }
-  input:focus, select:focus{
-    outline:2px solid var(--gold);
-    outline-offset:1px;
-    border-color:var(--gold);
-  }
-  .toggle-row{
-    display:flex;
-    gap:10px;
-  }
-  .toggle-row button{
-    flex:1;
-    font-family:'Inter',sans-serif;
-    font-size:.82rem;
-    font-weight:600;
-    padding:9px 10px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:#fff;
-    color:var(--muted);
-    cursor:pointer;
-    transition:all .12s ease;
-  }
-  .toggle-row button.on{
-    background:var(--ink);
-    border-color:var(--ink);
-    color:var(--paper);
-  }
-  .toggle-row button:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
-
-  .submit-row{
-    margin-top:28px;
-    display:flex;
-    align-items:center;
-    gap: 30px;
-    flex-wrap:wrap;
-}
-  button.primary{
-    font-family:'Inter',sans-serif;
-    font-weight:700;
-    font-size:.92rem;
-    background:var(--ink);
-    color:var(--paper);
-    border:none;
-    padding:13px 50px;
-    border-radius:9px;
-    cursor:pointer;
-    transition:transform .12s ease, background .12s ease;
-  }
-  button.primary:hover{background:var(--ink-soft);}
-  button.primary:active{transform:scale(.98);}
-  button.primary:disabled{opacity:.55; cursor:progress;}
-  button.primary:focus-visible{outline:2px solid var(--gold); outline-offset:3px;}
-  .form-error{
-    color:var(--risk);
-    font-size:.82rem;
-    font-weight:600;
-    display:none;
-  }
-
-  /* ---------- Verdict panel ---------- */
-  .verdict{
-    position:sticky;
-    top:40px;
-    text-align:center;
-  }
-  .verdict .section-label{justify-content:center;}
-  .verdict .section-label::after{display:none;}
-
-  .stamp-wrap{
-    display:flex;
-    justify-content:center;
-    margin:10px 0 18px;
-  }
-  .stamp{
-    width:150px;
-    height:150px;
-    transition:transform .5s cubic-bezier(.2,1.6,.4,1), opacity .3s ease;
-    transform:scale(.7) rotate(-14deg);
-    opacity:.45;
-  }
-  .stamp.ready{
-    transform:scale(1) rotate(-8deg);
-    opacity:1;
-  }
-  .stamp circle.ring{fill:none; stroke:var(--line); stroke-width:2.5;}
-  .stamp.risk circle.ring{stroke:var(--risk);}
-  .stamp.safe circle.ring{stroke:var(--safe);}
-  .stamp text{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    fill:var(--muted);
-  }
-  .stamp.risk text{fill:var(--risk);}
-  .stamp.safe text{fill:var(--safe);}
-
-  .verdict-figure{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:2.6rem;
-    font-weight:600;
-    line-height:1;
-    margin:0;
-  }
-  .verdict-figure span{font-size:1.1rem; color:var(--muted); font-weight:500;}
-  .verdict-caption{
-    color:var(--muted);
-    font-size:.82rem;
-    margin:6px 0 20px;
-  }
-  .risk-badge{
-    display:inline-block;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:.72rem;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    padding:4px 12px;
-    border-radius:999px;
-    border:1px solid var(--line);
-    margin-bottom:22px;
-  }
-  .risk-badge.High{color:var(--risk); border-color:var(--risk);}
-  .risk-badge.Medium{color:var(--gold); border-color:var(--gold);}
-  .risk-badge.Low{color:var(--safe); border-color:var(--safe);}
-
-  .factors{
-    text-align:left;
-    list-style:none;
-    margin:0;
-    padding:0;
-  }
-  .factors li{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:8px 0;
-    border-bottom:1px dashed var(--line);
-    font-size:.82rem;
-  }
-  .factors li:last-child{border-bottom:none;}
-  .factors .bar-track{
-    flex:1;
-    height:5px;
-    background:#DEDFD6;
-    border-radius:3px;
-    margin:0 10px;
-    overflow:hidden;
-  }
-  .factors .bar-fill{
-    height:100%;
-    background:var(--gold);
-    border-radius:3px;
-  }
-  .factors .val{
-    font-family:'IBM Plex Mono',monospace;
-    color:var(--muted);
-    width:38px;
-    text-align:right;
-    flex-shrink:0;
-  }
-  .empty-note{
-    color:var(--muted);
-    font-size:.85rem;
-    line-height:1.6;
-  }
-
-  /* ---------- Responsive ---------- */
-  @media (max-width: 980px){
-    .layout{grid-template-columns:1fr;}
-    .verdict{position:static;}
-  }
-  @media (max-width: 760px){
-    .app{grid-template-columns:1fr;}
-    .sidebar{
-      flex-direction:row;
-      align-items:center;
-      justify-content:space-between;
-      padding:16px 18px;
-      gap:0;
-    }
-    nav.primary{
-      flex-direction:row;
-      overflow-x:auto;
-      gap:4px;
-    }
-    nav.primary a{white-space:nowrap; padding:8px 10px; font-size:.78rem;}
-    .sidebar-foot{display:none;}
-    main{padding:26px 18px 48px;}
-    h1{font-size:1.5rem;}
-  }
-  @media (max-width: 520px){
-    .grid-fields{grid-template-columns:1fr;}
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .stamp{transition:none;}
-  }
-</style>
 </head>
-<body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand">Ledger &amp; Co. <small>Retention Desk</small></div>
-    <nav class="primary">
-      <a href="/Dashboard"><span class="num">01</span>Dashboard</a>
-      <a href="/Churn_predictor" class="active"><span class="num">02</span>Predictor</a>
-      <a href="/Customer_analytics"><span class="num">03</span>Analytics</a>
-      <a href="/Model_performance"><span class="num">04</span>Model performance</a>
-      <a href="/Retention_Campaigns"><span class="num">05</span>Retention campaigns</a>
-    </nav>
-    <div class="sidebar-foot">
-      Model: RandomForest<br>
-      Pipeline: OneHot + StandardScaler<br>
-      Served locally via FastAPI
-    </div>
-  </aside>
 
-  <main>
-    <header class="page-head">
-      <p class="eyebrow">Customer file — new entry</p>
-      <h1>Churn predictor</h1>
-      <p class="subhead">Enter a customer's account details below. The model stamps the file the moment you submit — no page reload, no waiting on a batch job.</p>
-    </header>
+<body class="page-dashboard">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">Ledger &amp; Co. <small>Retention Desk</small></div>
+      <nav class="primary">
+        <a href="/Dashboard"><span class="num"></span>Dashboard</a>
+        <a href="/Churn_predictor" class="active"><span class="num"></span>Churn Predictor</a>
+        <a href="/Customer_analytics"><span class="num"></span>Customer Analytics</a>
+        <a href="/Model_performance"><span class="num"></span>Model performance</a>
+        <a href="/Retention_Campaigns"><span class="num"></span>Retention campaigns</a>
+      </nav>
+    </aside>
 
-    <div class="layout">
-      <form class="card" id="predict-form" novalidate>
+    <main>
+      <header class="page-head">
+        <div>
+          <p class="eyebrow">Customer file — new entry</p>
+          <h1>Churn predictor</h1>
+          <p class="subhead">Enter a customer's account details below. The model stamps the file the moment you submit —
+            no page reload, no waiting on a batch job.</p>
+        </div>
+      </header>
+      <div class="layout">
+        <form class="card" id="predict-form" novalidate>
 
-        <p class="section-label">Identity</p>
-        <div class="grid-fields">
-          <div class="field">
-            <label for="gender">Gender</label>
-            <select id="gender" name="Gender"  required>
-                <option value="" selected disabled>Select Gender</option>
+          <p class="section-label">Identity</p>
+          <div class="grid-fields">
+            <div class="field">
+              <label for="gender">Gender</label>
+              <select id="gender" name="Gender" required>
                 <option value="Female">Female</option>
-                <option value="Male">Male</option>   
-            </select>
-          </div>
-          <div class="field">
-            <label for="age">Age <span class="hint">(18–100)</span></label>
-            <input type="number" id="age" name="Age" placeholder="Enter Your Age" min="18" max="100" required>
-          </div>
-        </div>
-
-        <p class="section-label">Account detail</p>
-        <div class="grid-fields">
-          <div class="field">
-            <label for="credit-score">Credit score <span class="hint">(300–900)</span></label>
-            <input type="number" id="credit-score" name="CreditScore" placeholder="Enter Credit Score" min="300" max="900" required>
-          </div>
-          <div class="field">
-            <label for="tenure">Tenure, years <span class="hint">(0–15)</span></label>
-            <input type="number" id="tenure" name="Tenure" placeholder="Enter Tenure" min="0" max="15"required>
-          </div>
-          <div class="field">
-            <label for="balance">Account balance</label>
-            <input type="number" id="balance" name="Balance" placeholder="Enter Account Balance" min="0" step="100"  required>
-          </div>
-          <div class="field">
-            <label for="num-products">Number of products <span class="hint">(1–4)</span></label>
-            <input type="number" id="num-products" name="NumOfProducts" placeholder="Enter Number of Products" min="1" max="4"  required>
-          </div>
-          <div class="field full">
-            <label>Has credit card</label>
-            <div class="toggle-row" data-target="has-cr-card">
-              <button type="button" data-value="1" class="on">Yes</button>
-              <button type="button" data-value="0">No</button>
+                <option value="Male">Male</option>
+              </select>
             </div>
-            <input type="hidden" id="has-cr-card" name="HasCrCard" value="1">
-          </div>
-        </div>
-
-        <p class="section-label">Engagement</p>
-        <div class="grid-fields">
-          <div class="field full">
-            <label>Active member</label>
-            <div class="toggle-row" data-target="is-active">
-              <button type="button" data-value="1" class="on">Yes</button>
-              <button type="button" data-value="0">No</button>
+            <div class="field">
+              <label for="age">Age <span class="hint">(18–100)</span></label>
+              <input type="number" id="age" name="Age" min="18" max="100" required>
             </div>
-            <input type="hidden" id="is-active" name="IsActiveMember" value="1">
           </div>
-          <div class="field full">
-            <label for="salary">Estimated salary</label>
-            <input type="number" id="salary" name="EstimatedSalary" placeholder="Enter Estimated Salary" min="0" step="500" value="50000" required>
+
+          <p class="section-label">Account detail</p>
+          <div class="grid-fields">
+            <div class="field">
+              <label for="credit-score">Credit score <span class="hint">(300–900)</span></label>
+              <input type="number" id="credit-score" name="CreditScore" min="300" max="900" required>
+            </div>
+            <div class="field">
+              <label for="tenure">Tenure, years <span class="hint">(0–15)</span></label>
+              <input type="number" id="tenure" name="Tenure" min="0" max="15" required>
+            </div>
+            <div class="field">
+              <label for="balance">Account balance</label>
+              <input type="number" id="balance" name="Balance" min="0" step="100" required>
+            </div>
+            <div class="field">
+              <label for="num-products">Number of products <span class="hint">(1–4)</span></label>
+              <input type="number" id="num-products" name="NumOfProducts" min="1" max="4" required>
+            </div>
+            <div class="field full">
+              <label>Has credit card</label>
+              <div class="toggle-row" data-target="has-cr-card">
+                <button type="button" data-value="1" class="on">Yes</button>
+                <button type="button" data-value="0">No</button>
+              </div>
+              <input type="hidden" id="has-cr-card" name="HasCrCard" value="1">
+            </div>
           </div>
-        </div>
-            <div class="submit-row">
-                    <button type="submit" class="primary" id="submit-btn">
-                        Run Prediction
-                    </button>
 
-                    <button type="button" class="primary" id="new-btn">
-                        New Prediction
-                    </button>
+          <p class="section-label">Engagement</p>
+          <div class="grid-fields">
+            <div class="field full">
+              <label>Active member</label>
+              <div class="toggle-row" data-target="is-active">
+                <button type="button" data-value="1" class="on">Yes</button>
+                <button type="button" data-value="0">No</button>
+              </div>
+              <input type="hidden" id="is-active" name="IsActiveMember" value="1">
+            </div>
+            <div class="field full">
+              <label for="salary">Estimated salary</label>
+              <input type="number" id="salary" name="EstimatedSalary" min="0" step="500" required>
+            </div>
+          </div>
 
-                    <span class="form-error" id="form-error">
-                        Couldn't reach the model. Check the server is running.
-                    </span>
-        </div>
-      </form>
+          <div class="submit-row">
+            <button type="submit" class="primary" id="submit-btn">Run Prediction</button>
+            <button type="button" class="primary" id="reset-btn">New Prediction</button>
+          </div>
 
-      <aside class="card verdict">
-        <p class="section-label">Verdict</p>
-        <div class="stamp-wrap">
-          <svg class="stamp" id="stamp" viewBox="0 0 150 150">
-            <circle class="ring" cx="75" cy="75" r="66" stroke-dasharray="6 5"></circle>
-            <circle class="ring" cx="75" cy="75" r="58"></circle>
-            <text x="75" y="70" font-size="16" text-anchor="middle" id="stamp-line1">PENDING</text>
-            <text x="75" y="90" font-size="10" text-anchor="middle" id="stamp-line2" letter-spacing="1">AWAITING FILE</text>
-          </svg>
-        </div>
+          <span class="form-error" id="form-error">
+            Couldn't reach the model. Check the server is running.
+          </span>
+        </form>
 
-        <div id="verdict-empty" class="empty-note">
-          Fill in the customer's details and stamp the file to see a live prediction here.
-        </div>
+        <aside class="card verdict">
+          <p class="section-label">Verdict</p>
+          <div class="stamp-wrap">
+            <svg class="stamp" id="stamp" viewBox="0 0 150 150">
+              <circle class="ring" cx="75" cy="75" r="66" stroke-dasharray="6 5"></circle>
+              <circle class="ring" cx="75" cy="75" r="58"></circle>
+              <text x="75" y="70" font-size="16" text-anchor="middle" id="stamp-line1">PENDING</text>
+              <text x="75" y="90" font-size="10" text-anchor="middle" id="stamp-line2" letter-spacing="1">AWAITING
+                FILE</text>
+            </svg>
+          </div>
 
-        <div id="verdict-result" style="display:none;">
-          <p class="verdict-figure" id="prob-figure">0<span>% churn probability</span></p>
-          <p class="verdict-caption" id="verdict-caption">&nbsp;</p>
-          <span class="risk-badge" id="risk-badge">—</span>
+          <div id="verdict-empty" class="empty-note">
+            Fill in the customer's details and stamp the file to see a live prediction here.
+          </div>
 
-          <p class="section-label">What generally drives this</p>
-          <ul class="factors" id="factors-list"></ul>
-          <p class="hint" style="text-align:left; margin-top:10px;">Ranked by the model's overall feature importance — a reference, not a per-customer breakdown.</p>
-        </div>
-      </aside>
-    </div>
-  </main>
-</div>
+          <div id="verdict-result" style="display:none;">
+            <p class="verdict-figure" id="prob-figure">0<span>% churn probability</span></p>
+            <p class="verdict-caption" id="verdict-caption">&nbsp;</p>
+            <span class="risk-badge" id="risk-badge">—</span>
 
-<script>
-  // Toggle buttons (Yes/No) write into their hidden input
-  document.querySelectorAll('.toggle-row').forEach(row => {
-    const hidden = document.getElementById(row.dataset.target);
-    row.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        row.querySelectorAll('button').forEach(b => b.classList.remove('on'));
-        btn.classList.add('on');
-        hidden.value = btn.dataset.value;
+            <p class="section-label">What generally drives this</p>
+            <ul class="factors" id="factors-list"></ul>
+            <p class="hint" style="text-align:left; margin-top:10px;">Ranked by the model's overall feature importance —
+              a reference, not a per-customer breakdown.</p>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Toggle buttons (Yes/No) write into their hidden input
+    document.querySelectorAll('.toggle-row').forEach(row => {
+      const hidden = document.getElementById(row.dataset.target);
+      row.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          row.querySelectorAll('button').forEach(b => b.classList.remove('on'));
+          btn.classList.add('on');
+          hidden.value = btn.dataset.value;
+        });
       });
     });
-  });
 
-  const form = document.getElementById('predict-form');
-  const submitBtn = document.getElementById('submit-btn');
-  const formError = document.getElementById('form-error');
-  const stamp = document.getElementById('stamp');
-  const stampLine1 = document.getElementById('stamp-line1');
-  const stampLine2 = document.getElementById('stamp-line2');
-  const verdictEmpty = document.getElementById('verdict-empty');
-  const verdictResult = document.getElementById('verdict-result');
-  const probFigure = document.getElementById('prob-figure');
-  const verdictCaption = document.getElementById('verdict-caption');
-  const riskBadge = document.getElementById('risk-badge');
-  const factorsList = document.getElementById('factors-list');
+    const form = document.getElementById('predict-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const formError = document.getElementById('form-error');
+    const stamp = document.getElementById('stamp');
+    const stampLine1 = document.getElementById('stamp-line1');
+    const stampLine2 = document.getElementById('stamp-line2');
+    const verdictEmpty = document.getElementById('verdict-empty');
+    const verdictResult = document.getElementById('verdict-result');
+    const probFigure = document.getElementById('prob-figure');
+    const verdictCaption = document.getElementById('verdict-caption');
+    const riskBadge = document.getElementById('risk-badge');
+    const factorsList = document.getElementById('factors-list');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    formError.style.display = 'none';
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Running Prediction…';
+    function clearErrors() {
 
-    const payload = {
-      Gender: document.getElementById('gender').value,
-      Age: Number(document.getElementById('age').value),
-      Tenure: Number(document.getElementById('tenure').value),
-      CreditScore: Number(document.getElementById('credit-score').value),
-      Balance: Number(document.getElementById('balance').value),
-      NumOfProducts: Number(document.getElementById('num-products').value),
-      HasCrCard: Number(document.getElementById('has-cr-card').value),
-      IsActiveMember: Number(document.getElementById('is-active').value),
-      EstimatedSalary: Number(document.getElementById('salary').value),
-    };
-
-    try {
-      const res = await fetch('/predict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      document.querySelectorAll(".field-error").forEach(el => {
+        el.classList.remove("field-error");
       });
-      if (!res.ok) {
-        const detail = await res.json().catch(() => null);
-        throw new Error(detail && detail.detail ? detail.detail : 'Request failed');
-      }
-      const data = await res.json();
-      renderResult(data);
-    } catch (err) {
-      formError.textContent = err.message || "Couldn't reach the model. Check the server is running.";
-      formError.style.display = 'inline';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Run Prediction';
+
+      document.querySelectorAll(".error-text").forEach(el => {
+        el.remove();
+      });
     }
-  });
 
-  function renderResult(data) {
-    verdictEmpty.style.display = 'none';
-    verdictResult.style.display = 'block';
+    function showFieldError(fieldId, message) {
 
-    const isRisk = data.prediction === 1;
-    stamp.classList.remove('ready', 'risk', 'safe');
+      const input = document.getElementById(fieldId);
 
-    // force reflow so the animation replays on repeated submits
-    void stamp.offsetWidth;
-    stamp.classList.add(isRisk ? 'risk' : 'safe');
-    stampLine1.textContent = isRisk ? 'AT RISK' : 'RETAINED';
-    stampLine2.textContent = isRisk ? 'FLAG FOR OUTREACH' : 'NO ACTION NEEDED';
-    requestAnimationFrame(() => stamp.classList.add('ready'));
+      if (!input) return;
 
-    probFigure.innerHTML = data.churn_probability + '<span>% churn probability</span>';
-    verdictCaption.textContent = isRisk
-      ? 'This customer looks likely to leave.'
-      : 'This customer looks likely to stay.';
-    riskBadge.textContent = data.risk_level + ' risk';
-    riskBadge.className = 'risk-badge ' + data.risk_level;
+      input.classList.add("field-error");
+
+      const error = document.createElement("div");
+      error.className = "error-text";
+      error.textContent = message;
+
+      const old = input.parentElement.querySelector(".error-text");
+      if (old) old.remove();
+
+      input.parentElement.appendChild(error);
+
+      input.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+      input.focus();
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      formError.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Run Prediction...';
+
+      const payload = {
+        Gender: document.getElementById('gender').value,
+        Age: Number(document.getElementById('age').value),
+        Tenure: Number(document.getElementById('tenure').value),
+        CreditScore: Number(document.getElementById('credit-score').value),
+        Balance: Number(document.getElementById('balance').value),
+        NumOfProducts: Number(document.getElementById('num-products').value),
+        HasCrCard: Number(document.getElementById('has-cr-card').value),
+        IsActiveMember: Number(document.getElementById('is-active').value),
+        EstimatedSalary: Number(document.getElementById('salary').value),
+      };
+
+      try {
+        const res = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const errorData = await res.json();
+
+          let errorMessage = `Error ${res.status}\n\n`;
+
+          if (Array.isArray(errorData.detail)) {
+            errorMessage += errorData.detail
+              .map(err =>
+                `${err.loc.join(" → ")} : ${err.msg}\nReceived: ${JSON.stringify(err.input)}`
+              )
+              .join("\n\n");
+          } else {
+            errorMessage += errorData.detail || "Unknown error";
+          }
+
+          throw new Error(errorMessage);
+        }
+        const data = await res.json();
+        renderResult(data);
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Run Prediction";
+      } catch (err) {
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Run Prediction";
+
+        clearErrors();
+        formError.style.display = "none";
+
+        // Agar FastAPI validation error hai
+        if (err.message.includes("Error 422")) {
+
+          try {
+
+            const lines = err.message.split("\n");
+
+            const fieldLine = lines[2]; // body → Age : Input should be greater...
+            const parts = fieldLine.split(" : ");
+
+            const backendField = parts[0].split("→").pop().trim();
+            const backendMsg = parts[1];
+
+            const fieldMap = {
+              Gender: "gender",
+              Age: "age",
+              CreditScore: "credit-score",
+              Tenure: "tenure",
+              Balance: "balance",
+              NumOfProducts: "num-products",
+              EstimatedSalary: "salary"
+            };
+
+            const messageMap = {
+              "Field required": "Please fill in this field.",
+              "Input should be greater than or equal to 18": "Age must be at least 18 years.",
+              "Input should be less than or equal to 100": "Age cannot be more than 100 years.",
+              "Input should be greater than or equal to 300": "Credit score must be at least 300.",
+              "Input should be less than or equal to 900": "Credit score cannot exceed 900.",
+              "Input should be greater than or equal to 0": "Please enter a valid positive value.",
+              "Input should be greater than or equal to 1": "Value must be at least 1.",
+              "Input should be less than or equal to 4": "Maximum allowed value is 4."
+            };
+
+            showFieldError(
+              fieldMap[backendField],
+              messageMap[backendMsg] || backendMsg
+            );
+
+          } catch {
+            formError.textContent = err.message;
+            formError.style.display = "inline";
+          }
+
+        } else {
+
+          formError.textContent = err.message;
+          formError.style.display = "inline";
+
+        }
+      }
+    });
+    document.querySelectorAll("#predict-form input, #predict-form select").forEach(field => {
+
+      field.addEventListener("input", () => {
+
+        field.classList.remove("field-error");
+
+        const error = field.parentElement.querySelector(".error-text");
+        if (error) error.remove();
+
+      });
+
+    });
+
+    function renderResult(data) {
+      clearErrors();
+      verdictEmpty.style.display = 'none';
+      verdictResult.style.display = 'block';
+
+      const isRisk = data.prediction === 1;
+      stamp.classList.remove('ready', 'risk', 'safe');
+      // force reflow so the animation replays on repeated submits
+      void stamp.offsetWidth;
+      stamp.classList.add(isRisk ? 'risk' : 'safe');
+      stampLine1.textContent = isRisk ? 'AT RISK' : 'RETAINED';
+      stampLine2.textContent = isRisk ? 'FLAG FOR OUTREACH' : 'NO ACTION NEEDED';
+      requestAnimationFrame(() => stamp.classList.add('ready'));
+
+      probFigure.innerHTML = data.churn_probability + '<span>% churn probability</span>';
+      verdictCaption.textContent = isRisk
+        ? 'This customer looks likely to leave.'
+        : 'This customer looks likely to stay.';
+      riskBadge.textContent = data.risk_level + ' risk';
+      riskBadge.className = 'risk-badge ' + data.risk_level;
 
     factorsList.innerHTML = '';
-    data.top_factors.forEach(f => {
-      const li = document.createElement('li');
-      li.innerHTML = `
-        <span>${f.label}</span>
-        <span class="bar-track"><span class="bar-fill" style="width:${Math.min(f.importance * 2.5, 100)}%"></span></span>
+
+const maxImportance = Math.max(
+    ...data.top_factors.map(f => f.importance)
+);
+
+data.top_factors.forEach(f => {
+
+    const width = (f.importance / maxImportance) * 100;
+
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+        <span class="factor-name">${f.label}</span>
+
+        <span class="bar-track">
+            <span class="bar-fill" style="width:${width}%"></span>
+        </span>
+
         <span class="val">${f.importance}%</span>
-      `;
-      factorsList.appendChild(li);
-    });
-  }
-//   new prediction button resets the form and verdict panel
-document.getElementById("new-btn").addEventListener("click", () => {
+    `;
 
-    form.reset();
+    factorsList.appendChild(li);
+});
 
-    document.getElementById("has-cr-card").value = 1;
-    document.getElementById("is-active").value = 1;
+    }
+    // New Prediction button
+    document.getElementById("reset-btn").addEventListener("click", () => {
 
-    document.querySelectorAll(".toggle-row").forEach(row => {
+      // Reset all form inputs
+      form.reset();
+
+      // Reset toggle buttons to default (Yes)
+      document.getElementById("has-cr-card").value = "1";
+      document.getElementById("is-active").value = "1";
+
+      document.querySelectorAll(".toggle-row").forEach(row => {
         row.querySelectorAll("button").forEach(btn => btn.classList.remove("on"));
         row.querySelector('button[data-value="1"]').classList.add("on");
+      });
+
+      // Hide previous prediction
+      verdictResult.style.display = "none";
+      verdictEmpty.style.display = "block";
+
+      // Reset stamp
+      stamp.className = "stamp";
+      stampLine1.textContent = "PENDING";
+      stampLine2.textContent = "AWAITING FILE";
+
+      // Clear error message
+      formError.style.display = "none";
+
+      // Focus on first input
+      document.getElementById("gender").focus();
     });
-
-    verdictResult.style.display = "none";
-    verdictEmpty.style.display = "block";
-
-    stamp.className = "stamp";
-    stampLine1.textContent = "PENDING";
-    stampLine2.textContent = "AWAITING FILE";
-});
-</script>
+  </script>
 </body>
+
 </html>
