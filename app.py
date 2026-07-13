@@ -92,7 +92,7 @@ PAGES = {
     "Churn_predictor": "Churn_predictor.html",
     "Customer_analytics": "Customer_analytics.html",
     "Model_performance": "Model_performance.html",
-    "Rentention_Campaigns": "Rentention_Campaigns.html",
+    "Retention_Campaigns": "Retention_Campaigns.html",
 }
 
 
@@ -106,7 +106,7 @@ def render_page(request: Request, template_name: str):
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return render_page(request, "Churn_predictor.html")
+    return render_page(request, "Dashboard.html")
 
 
 @app.get("/Dashboard", response_class=HTMLResponse)

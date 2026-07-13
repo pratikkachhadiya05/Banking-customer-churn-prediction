@@ -1,264 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ title }} — Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="/static/css/style.css">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
 </head>
+
 <body class="page-dashboard">
-<div class="menu-btn" id="menuBtn">
-    ☰
-</div>
-<div class="app">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">Ledger &amp; Co. <small>Retention Desk</small></div>
-    <nav class="primary">
-      <a href="/Dashboard" class="active"><span class="num"></span>Dashboard</a>
-      <a href="/Churn_predictor"><span class="num"></span>Churn Predictor</a>
-      <a href="/Customer_analytics"><span class="num"></span>Customer Analytics</a>
-      <a href="/Model_performance"><span class="num"></span>Model performance</a>
-      <a href="/Retention_Campaigns"><span class="num"></span>Retention campaigns</a>
-    </nav>
-  </aside>
+  <div class="mobile-header">
+    <button id="menuBtn" class="menu-btn">
+      ☰
+    </button>
+    <div class="mobile-logo">
+      FinForest & AI
+    </div>
+  </div>
+  <div class="overlay" id="overlay"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">FinForest & AI </div>
+      <nav class="primary">
+        <a href="/Dashboard" class="active"><span class="num"></span>Dashboard</a>
+        <a href="/Churn_predictor"><span class="num"></span>Churn Predictor</a>
+        <a href="/Customer_analytics"><span class="num"></span>Customer Analytics</a>
+        <a href="/Model_performance"><span class="num"></span>Model performance</a>
+        <a href="/Retention_Campaigns"><span class="num"></span>Retention campaigns</a>
+      </nav>
+    </aside>
 
-  <main>
-    <header class="page-head">
-      <div>
-        <p class="eyebrow">Portfolio overview</p>
-        <h1>Customer churn ledger</h1>
-        <p class="subhead">A rolled-up view of the book: how many accounts are flagged, where the trend is heading, and who's due a call this week.</p>
-      </div>
-      <span class="as-of">Sample data · last refreshed today</span>
-    </header>
-
-    <section class="kpi-row">
-      <div class="kpi">
-        <p class="kpi-label">Total customers</p>
-        <p class="kpi-value">25,432 <span class="delta up">▲ 20.3%</span></p>
-      </div>
-      <div class="kpi">
-        <p class="kpi-label">Overall churn rate</p>
-        <p class="kpi-value">5.1% <span class="delta down">▲</span></p>
-      </div>
-      <div class="kpi flag">
-        <p class="kpi-label">High-risk accounts</p>
-        <p class="kpi-value">1,288</p>
-      </div>
-      <div class="kpi">
-        <p class="kpi-label">Medium-risk accounts</p>
-        <p class="kpi-value">6,711</p>
-      </div>
-    </section>
-
-    <section class="grid-2">
-      <div class="card">
-        <p class="section-label">Historical churn trend — 12 months</p>
-        <svg id="trend-svg" viewBox="0 0 640 220" preserveAspectRatio="xMidYMid meet">
-          <defs>
-            <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#17241F" stop-opacity="0.35"/>
-              <stop offset="100%" stop-color="#17241F" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <g id="trend-gridlines"></g>
-          <path id="trend-fill" class="trend-fill"></path>
-          <path id="trend-line" class="trend-path"></path>
-          <g id="trend-dots"></g>
-          <g id="trend-axis"></g>
-        </svg>
-      </div>
-
-      <div class="card">
-        <p class="section-label">Risk segment distribution</p>
-        <div class="donut-wrap">
-          <svg id="donut-svg" width="140" height="140" viewBox="0 0 140 140"></svg>
-          <ul class="donut-legend" id="donut-legend"></ul>
+    <main>
+      <header class="page-head">
+        <div>
+          <p class="eyebrow">Portfolio overview</p>
+          <h1>Customer churn ledger</h1>
+          <p class="subhead">A rolled-up view of the book: how many accounts are flagged, where the trend is heading,
+            and who's due a call this week.</p>
         </div>
+        <span class="as-of">Sample data · last refreshed today</span>
+      </header>
+
+      <section class="kpi-row">
+        <div class="kpi">
+          <p class="kpi-label">Total customers</p>
+          <p class="kpi-value">25,432 <span class="delta up">▲ 20.3%</span></p>
+        </div>
+        <div class="kpi">
+          <p class="kpi-label">Overall churn rate</p>
+          <p class="kpi-value">5.1% <span class="delta down">▲</span></p>
+        </div>
+        <div class="kpi flag">
+          <p class="kpi-label">High-risk accounts</p>
+          <p class="kpi-value">1,288</p>
+        </div>
+        <div class="kpi">
+          <p class="kpi-label">Medium-risk accounts</p>
+          <p class="kpi-value">6,711</p>
+        </div>
+      </section>
+
+      <section class="grid-2">
+        <div class="card">
+          <p class="section-label">Historical churn trend — 12 months</p>
+          <svg id="trend-svg" viewBox="0 0 640 220" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#17241F" stop-opacity="0.35" />
+                <stop offset="100%" stop-color="#17241F" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <g id="trend-gridlines"></g>
+            <path id="trend-fill" class="trend-fill"></path>
+            <path id="trend-line" class="trend-path"></path>
+            <g id="trend-dots"></g>
+            <g id="trend-axis"></g>
+          </svg>
+        </div>
+
+        <div class="card">
+          <p class="section-label">Risk segment distribution</p>
+          <div class="donut-wrap">
+            <svg id="donut-svg" width="140" height="140" viewBox="0 0 140 140"></svg>
+            <ul class="donut-legend" id="donut-legend"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid-2">
+        <div class="card">
+          <p class="section-label">Top portfolio churn drivers</p>
+          <ul class="drivers-list" id="drivers-list"></ul>
+        </div>
+
+        <div class="card">
+          <p class="section-label">Pending high-risk accounts</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Account</th>
+                <th>Risk score</th>
+                <th>Next step</th>
+              </tr>
+            </thead>
+            <tbody id="accounts-body"></tbody>
+          </table>
+        </div>
+      </section>
+      <div class="next-page">
+        <a href="/Churn_predictor" class="predict-btn">
+          Go to Prediction
+          <span>→</span>
+        </a>
       </div>
-    </section>
+    </main>
 
-    <section class="grid-2">
-      <div class="card">
-        <p class="section-label">Top portfolio churn drivers</p>
-        <ul class="drivers-list" id="drivers-list"></ul>
-      </div>
+  </div>
 
-      <div class="card">
-        <p class="section-label">Pending high-risk accounts</p>
-        <table>
-          <thead>
-            <tr><th>Account</th><th>Risk score</th><th>Next step</th></tr>
-          </thead>
-          <tbody id="accounts-body"></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-</div>
+  <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
 
-<script>
-  const menuBtn=document.getElementById("menuBtn");
-  const sidebar=document.getElementById("sidebar");
+    menuBtn.onclick = function () {
+      sidebar.classList.toggle("show");
+      overlay.classList.toggle("show");
+    }
 
-  menuBtn.addEventListener("click",()=>{
+    overlay.onclick = function () {
+      sidebar.classList.remove("show");
+      overlay.classList.remove("show");
+    }
+    // ---- Sample portfolio data (swap for a live feed later) ----
+    const trendData = [
+      { m: 'Jan', v: 4.3 }, { m: 'Feb', v: 1.2 }, { m: 'Mar', v: 3.2 }, { m: 'Apr', v: 1.2 },
+      { m: 'May', v: 2.2 }, { m: 'Jun', v: 4.2 }, { m: 'Jul', v: 3.5 }, { m: 'Aug', v: 4.3 },
+      { m: 'Sep', v: 5.3 }, { m: 'Oct', v: 7.2 }, { m: 'Nov', v: 6.2 }, { m: 'Dec', v: 5.6 },
+    ];
 
-  sidebar.classList.toggle("show");
+    const riskSegments = [
+      { name: 'High risk', count: 1288, pct: 12, color: '#A63D33' },
+      { name: 'Medium risk', count: 6711, pct: 46, color: '#B8862F' },
+      { name: 'Low risk', count: 17433, pct: 42, color: '#2F6E4F' },
+    ];
 
-  });
-  // ---- Sample portfolio data (swap for a live feed later) ----
-  const trendData = [
-    {m:'Jan', v:4.3}, {m:'Feb', v:1.2}, {m:'Mar', v:3.2}, {m:'Apr', v:1.2},
-    {m:'May', v:2.2}, {m:'Jun', v:4.2}, {m:'Jul', v:3.5}, {m:'Aug', v:4.3},
-    {m:'Sep', v:5.3}, {m:'Oct', v:7.2}, {m:'Nov', v:6.2}, {m:'Dec', v:5.6},
-  ];
+    const drivers = [
+      { name: 'Activity level', pct: 30.7 },
+      { name: 'Product holdings', pct: 27.5 },
+      { name: 'Balance changes', pct: 19.3 },
+      { name: 'Credit score', pct: 9.2 },
+      { name: 'Age segment', pct: 5.2 },
+    ];
 
-  const riskSegments = [
-    {name:'High risk', count:1288, pct:12, color:'#A63D33'},
-    {name:'Medium risk', count:6711, pct:46, color:'#B8862F'},
-    {name:'Low risk', count:17433, pct:42, color:'#2F6E4F'},
-  ];
+    const pendingAccounts = [
+      { name: 'A. Okafor', id: '#54210', score: 82, level: 'high', step: 'High-risk outreach' },
+      { name: 'M. Zeidler', id: '#61183', score: 78, level: 'high', step: 'Retention offer' },
+      { name: 'I. Soctent', id: '#43977', score: 71, level: 'medium', step: 'Check-in call' },
+      { name: 'R. Castillo', id: '#39012', score: 69, level: 'medium', step: 'Product review' },
+    ];
 
-  const drivers = [
-    {name:'Activity level', pct:30.7},
-    {name:'Product holdings', pct:27.5},
-    {name:'Balance changes', pct:19.3},
-    {name:'Credit score', pct:9.2},
-    {name:'Age segment', pct:5.2},
-  ];
+    // ---- Trend chart ----
+    (function drawTrend() {
+      const W = 640, H = 220, padL = 26, padR = 10, padT = 14, padB = 26;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+      const maxV = 10;
+      const stepX = plotW / (trendData.length - 1);
 
-  const pendingAccounts = [
-    {name:'A. Okafor', id:'#54210', score:82, level:'high', step:'High-risk outreach'},
-    {name:'M. Zeidler', id:'#61183', score:78, level:'high', step:'Retention offer'},
-    {name:'I. Soctent', id:'#43977', score:71, level:'medium', step:'Check-in call'},
-    {name:'R. Castillo', id:'#39012', score:69, level:'medium', step:'Product review'},
-  ];
+      const points = trendData.map((d, i) => ({
+        x: padL + i * stepX,
+        y: padT + plotH - (d.v / maxV) * plotH,
+        v: d.v, m: d.m
+      }));
 
-  // ---- Trend chart ----
-  (function drawTrend(){
-    const W = 640, H = 220, padL = 26, padR = 10, padT = 14, padB = 26;
-    const plotW = W - padL - padR, plotH = H - padT - padB;
-    const maxV = 10;
-    const stepX = plotW / (trendData.length - 1);
+      const gridG = document.getElementById('trend-gridlines');
+      [0, 2, 4, 6, 8, 10].forEach(v => {
+        const y = padT + plotH - (v / maxV) * plotH;
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', padL); line.setAttribute('x2', W - padR);
+        line.setAttribute('y1', y); line.setAttribute('y2', y);
+        line.setAttribute('class', 'grid-row');
+        gridG.appendChild(line);
+        const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        txt.setAttribute('x', 4); txt.setAttribute('y', y + 3);
+        txt.setAttribute('class', 'axis-label');
+        txt.textContent = v;
+        gridG.appendChild(txt);
+      });
 
-    const points = trendData.map((d, i) => ({
-      x: padL + i * stepX,
-      y: padT + plotH - (d.v / maxV) * plotH,
-      v: d.v, m: d.m
-    }));
+      const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+      document.getElementById('trend-line').setAttribute('d', linePath);
+      const fillPath = linePath + ` L${points[points.length - 1].x.toFixed(1)},${(padT + plotH).toFixed(1)} L${points[0].x.toFixed(1)},${(padT + plotH).toFixed(1)} Z`;
+      document.getElementById('trend-fill').setAttribute('d', fillPath);
 
-    const gridG = document.getElementById('trend-gridlines');
-    [0,2,4,6,8,10].forEach(v => {
-      const y = padT + plotH - (v/maxV)*plotH;
-      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1', padL); line.setAttribute('x2', W-padR);
-      line.setAttribute('y1', y); line.setAttribute('y2', y);
-      line.setAttribute('class','grid-row');
-      gridG.appendChild(line);
-      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
-      txt.setAttribute('x', 4); txt.setAttribute('y', y+3);
-      txt.setAttribute('class','axis-label');
-      txt.textContent = v;
-      gridG.appendChild(txt);
-    });
+      const peak = points.reduce((a, b) => b.v > a.v ? b : a);
+      const dotsG = document.getElementById('trend-dots');
+      points.forEach(p => {
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', p === peak ? 4 : 2.6);
+        c.setAttribute('class', 'trend-dot' + (p === peak ? ' peak' : ''));
+        dotsG.appendChild(c);
+      });
+      const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      tag.setAttribute('x', peak.x); tag.setAttribute('y', peak.y - 10);
+      tag.setAttribute('text-anchor', 'middle'); tag.setAttribute('class', 'peak-tag');
+      tag.textContent = peak.m + ' peak: ' + peak.v + '%';
+      dotsG.appendChild(tag);
 
-    const linePath = points.map((p,i) => (i===0?'M':'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
-    document.getElementById('trend-line').setAttribute('d', linePath);
-    const fillPath = linePath + ` L${points[points.length-1].x.toFixed(1)},${(padT+plotH).toFixed(1)} L${points[0].x.toFixed(1)},${(padT+plotH).toFixed(1)} Z`;
-    document.getElementById('trend-fill').setAttribute('d', fillPath);
+      const axisG = document.getElementById('trend-axis');
+      points.forEach(p => {
+        const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttribute('x', p.x); t.setAttribute('y', H - 6);
+        t.setAttribute('text-anchor', 'middle'); t.setAttribute('class', 'axis-label');
+        t.textContent = p.m;
+        axisG.appendChild(t);
+      });
+    })();
 
-    const peak = points.reduce((a,b) => b.v > a.v ? b : a);
-    const dotsG = document.getElementById('trend-dots');
-    points.forEach(p => {
-      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', p===peak ? 4 : 2.6);
-      c.setAttribute('class', 'trend-dot' + (p===peak ? ' peak' : ''));
-      dotsG.appendChild(c);
-    });
-    const tag = document.createElementNS('http://www.w3.org/2000/svg','text');
-    tag.setAttribute('x', peak.x); tag.setAttribute('y', peak.y - 10);
-    tag.setAttribute('text-anchor','middle'); tag.setAttribute('class','peak-tag');
-    tag.textContent = peak.m + ' peak: ' + peak.v + '%';
-    dotsG.appendChild(tag);
+    // ---- Donut chart ----
+    (function drawDonut() {
+      const svg = document.getElementById('donut-svg');
+      const cx = 70, cy = 70, r = 52, stroke = 20;
+      const circumference = 2 * Math.PI * r;
+      let offsetAcc = 0;
+      riskSegments.forEach(seg => {
+        const len = (seg.pct / 100) * circumference;
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+        circle.setAttribute('fill', 'none');
+        circle.setAttribute('stroke', seg.color);
+        circle.setAttribute('stroke-width', stroke);
+        circle.setAttribute('stroke-dasharray', `${len} ${circumference - len}`);
+        circle.setAttribute('stroke-dashoffset', -offsetAcc);
+        circle.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+        svg.appendChild(circle);
+        offsetAcc += len;
+      });
+      const centerPct = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      centerPct.setAttribute('x', cx); centerPct.setAttribute('y', cy + 5);
+      centerPct.setAttribute('text-anchor', 'middle');
+      centerPct.setAttribute('font-family', "'IBM Plex Mono',monospace");
+      centerPct.setAttribute('font-size', '15'); centerPct.setAttribute('font-weight', '600');
+      centerPct.setAttribute('fill', '#17241F');
+      centerPct.textContent = riskSegments[1].pct + '%';
+      svg.appendChild(centerPct);
 
-    const axisG = document.getElementById('trend-axis');
-    points.forEach(p => {
-      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-      t.setAttribute('x', p.x); t.setAttribute('y', H - 6);
-      t.setAttribute('text-anchor','middle'); t.setAttribute('class','axis-label');
-      t.textContent = p.m;
-      axisG.appendChild(t);
-    });
-  })();
-
-  // ---- Donut chart ----
-  (function drawDonut(){
-    const svg = document.getElementById('donut-svg');
-    const cx = 70, cy = 70, r = 52, stroke = 20;
-    const circumference = 2 * Math.PI * r;
-    let offsetAcc = 0;
-    riskSegments.forEach(seg => {
-      const len = (seg.pct/100) * circumference;
-      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
-      circle.setAttribute('fill','none');
-      circle.setAttribute('stroke', seg.color);
-      circle.setAttribute('stroke-width', stroke);
-      circle.setAttribute('stroke-dasharray', `${len} ${circumference-len}`);
-      circle.setAttribute('stroke-dashoffset', -offsetAcc);
-      circle.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
-      svg.appendChild(circle);
-      offsetAcc += len;
-    });
-    const centerPct = document.createElementNS('http://www.w3.org/2000/svg','text');
-    centerPct.setAttribute('x', cx); centerPct.setAttribute('y', cy+5);
-    centerPct.setAttribute('text-anchor','middle');
-    centerPct.setAttribute('font-family',"'IBM Plex Mono',monospace");
-    centerPct.setAttribute('font-size','15'); centerPct.setAttribute('font-weight','600');
-    centerPct.setAttribute('fill','#17241F');
-    centerPct.textContent = riskSegments[1].pct + '%';
-    svg.appendChild(centerPct);
-
-    const legend = document.getElementById('donut-legend');
-    riskSegments.forEach(seg => {
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="swatch" style="background:${seg.color}"></span>
+      const legend = document.getElementById('donut-legend');
+      riskSegments.forEach(seg => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="swatch" style="background:${seg.color}"></span>
         <span class="name">${seg.name}</span>
         <span class="count">${seg.count.toLocaleString()}</span>`;
-      legend.appendChild(li);
-    });
-  })();
+        legend.appendChild(li);
+      });
+    })();
 
-  // ---- Drivers bars ----
-  (function drawDrivers(){
-    const list = document.getElementById('drivers-list');
-    
-    drivers.forEach(d => {
-      const li = document.createElement('li');
-      li.innerHTML = `
+    // ---- Drivers bars ----
+    (function drawDrivers() {
+      const list = document.getElementById('drivers-list');
+
+      drivers.forEach(d => {
+        const li = document.createElement('li');
+        li.innerHTML = `
         <span class="name">${d.name}</span>
         <span class="bar-track"><span class="bar-fill" style="width:${d.pct}%"></span></span>
         <span class="val">${d.pct}%</span>`;
-      list.appendChild(li);
-    });
-  })();
+        list.appendChild(li);
+      });
+    })();
 
-  // ---- Pending accounts table ----
-  (function drawAccounts(){
-    const body = document.getElementById('accounts-body');
-    pendingAccounts.forEach(a => {
-      const initials = a.name.split(' ').map(p => p[0]).join('');
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
+    // ---- Pending accounts table ----
+    (function drawAccounts() {
+      const body = document.getElementById('accounts-body');
+      pendingAccounts.forEach(a => {
+        const initials = a.name.split(' ').map(p => p[0]).join('');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
         <td><div class="cust-cell"><span class="avatar">${initials}</span><div>${a.name}<br><span style="color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:.72rem;">${a.id}</span></div></div></td>
         <td><span class="score-pill ${a.level}">${a.score}</span></td>
         <td><button class="campaign-btn">${a.step}</button></td>`;
-      body.appendChild(tr);
-    });
-  })();
-</script>
+        body.appendChild(tr);
+      });
+    })();
+  </script>
 </body>
+
 </html>

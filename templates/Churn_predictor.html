@@ -15,9 +15,22 @@
 </head>
 
 <body class="page-dashboard">
+  <div class="mobile-header">
+
+    <button id="menuBtn" class="menu-btn">
+      ☰
+    </button>
+
+    <div class="mobile-logo">
+      FinForest & AI
+    </div>
+
+  </div>
+
+  <div class="overlay" id="overlay"></div>
   <div class="app">
-    <aside class="sidebar">
-      <div class="brand">Ledger &amp; Co. <small>Retention Desk</small></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">FinForest & AI </div>
       <nav class="primary">
         <a href="/Dashboard"><span class="num"></span>Dashboard</a>
         <a href="/Churn_predictor" class="active"><span class="num"></span>Churn Predictor</a>
@@ -44,13 +57,14 @@
             <div class="field">
               <label for="gender">Gender</label>
               <select id="gender" name="Gender" required>
+                <option value="" selected disabled hidden>Select Gender</option>
                 <option value="Female">Female</option>
                 <option value="Male">Male</option>
               </select>
             </div>
             <div class="field">
               <label for="age">Age <span class="hint">(18–100)</span></label>
-              <input type="number" id="age" name="Age" min="18" max="100" required>
+              <input type="number" id="age" name="Age" min="18" max="100" placeholder="e.g. 20" required>
             </div>
           </div>
 
@@ -58,19 +72,19 @@
           <div class="grid-fields">
             <div class="field">
               <label for="credit-score">Credit score <span class="hint">(300–900)</span></label>
-              <input type="number" id="credit-score" name="CreditScore" min="300" max="900" required>
+              <input type="number" id="credit-score" name="CreditScore" min="300" max="900" placeholder="e.g. 600" required>
             </div>
             <div class="field">
               <label for="tenure">Tenure, years <span class="hint">(0–15)</span></label>
-              <input type="number" id="tenure" name="Tenure" min="0" max="15" required>
+              <input type="number" id="tenure" name="Tenure" min="0" max="15" placeholder="e.g. 5" required>
             </div>
             <div class="field">
               <label for="balance">Account balance</label>
-              <input type="number" id="balance" name="Balance" min="0" step="100" required>
+              <input type="number" id="balance" name="Balance" min="0" step="100" placeholder="e.g. 5000" required>
             </div>
             <div class="field">
               <label for="num-products">Number of products <span class="hint">(1–4)</span></label>
-              <input type="number" id="num-products" name="NumOfProducts" min="1" max="4" required>
+              <input type="number" id="num-products" name="NumOfProducts" min="1" max="4" placeholder="e.g. 2" required>
             </div>
             <div class="field full">
               <label>Has credit card</label>
@@ -94,7 +108,7 @@
             </div>
             <div class="field full">
               <label for="salary">Estimated salary</label>
-              <input type="number" id="salary" name="EstimatedSalary" min="0" step="500" required>
+              <input type="number" id="salary" name="EstimatedSalary" min="0" step="500" placeholder="e.g. 5000" required>
             </div>
           </div>
 
@@ -140,17 +154,7 @@
   </div>
 
   <script>
-    // Toggle buttons (Yes/No) write into their hidden input
-    document.querySelectorAll('.toggle-row').forEach(row => {
-      const hidden = document.getElementById(row.dataset.target);
-      row.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', () => {
-          row.querySelectorAll('button').forEach(b => b.classList.remove('on'));
-          btn.classList.add('on');
-          hidden.value = btn.dataset.value;
-        });
-      });
-    });
+
 
     const form = document.getElementById('predict-form');
     const submitBtn = document.getElementById('submit-btn');
@@ -164,6 +168,34 @@
     const verdictCaption = document.getElementById('verdict-caption');
     const riskBadge = document.getElementById('risk-badge');
     const factorsList = document.getElementById('factors-list');
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    menuBtn.onclick = function () {
+
+      sidebar.classList.toggle("show");
+      overlay.classList.toggle("show");
+    }
+
+    overlay.onclick = function () {
+
+      sidebar.classList.remove("show");
+      overlay.classList.remove("show");
+    }
+
+
+    // Toggle buttons (Yes/No) write into their hidden input
+    document.querySelectorAll('.toggle-row').forEach(row => {
+      const hidden = document.getElementById(row.dataset.target);
+      row.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          row.querySelectorAll('button').forEach(b => b.classList.remove('on'));
+          btn.classList.add('on');
+          hidden.value = btn.dataset.value;
+        });
+      });
+    });
 
     function clearErrors() {
 
@@ -340,19 +372,19 @@
       riskBadge.textContent = data.risk_level + ' risk';
       riskBadge.className = 'risk-badge ' + data.risk_level;
 
-    factorsList.innerHTML = '';
+      factorsList.innerHTML = '';
 
-const maxImportance = Math.max(
-    ...data.top_factors.map(f => f.importance)
-);
+      const maxImportance = Math.max(
+        ...data.top_factors.map(f => f.importance)
+      );
 
-data.top_factors.forEach(f => {
+      data.top_factors.forEach(f => {
 
-    const width = (f.importance / maxImportance) * 100;
+        const width = (f.importance / maxImportance) * 100;
 
-    const li = document.createElement("li");
+        const li = document.createElement("li");
 
-    li.innerHTML = `
+        li.innerHTML = `
         <span class="factor-name">${f.label}</span>
 
         <span class="bar-track">
@@ -362,8 +394,8 @@ data.top_factors.forEach(f => {
         <span class="val">${f.importance}%</span>
     `;
 
-    factorsList.appendChild(li);
-});
+        factorsList.appendChild(li);
+      });
 
     }
     // New Prediction button
