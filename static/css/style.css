@@ -321,6 +321,7 @@ h1 {
 .bar-track {
   flex: 1;
   height: 9px;
+  min-height: 9px;
   background: #d9d9d9;
   border-radius: 30px;
   overflow: hidden;
@@ -686,6 +687,239 @@ button.primary:focus-visible {
   font-size: 0.85rem;
   line-height: 1.6;
 }
+
+/* ---------- Prediction result panel (gauge-based redesign) ---------- */
+.result-heading {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin: 0 0 18px;
+  text-align: center;
+}
+
+.risk-gauge-wrap {
+  text-align: center;
+  margin-bottom: 26px;
+}
+.gauge-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+.gauge-svg {
+  width: 210px;
+  max-width: 100%;
+  height: auto;
+}
+.gauge-track-seg {
+  fill: none;
+  stroke-width: 18;
+  stroke-linecap: butt;
+}
+.gauge-track-seg.low {
+  stroke: var(--safe);
+}
+.gauge-track-seg.medium {
+  stroke: var(--medium);
+}
+.gauge-track-seg.high {
+  stroke: var(--risk);
+}
+.gauge-needle {
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: 100px 110px;
+}
+.gauge-pivot {
+  fill: var(--ink);
+}
+.gauge-figure {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 1;
+  margin: -18px 0 2px;
+}
+.gauge-figure span {
+  font-size: 1.2rem;
+}
+.gauge-caption {
+  font-size: 0.86rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.gauge-caption.High {
+  color: var(--risk);
+}
+.gauge-caption.Medium {
+  color: var(--medium);
+}
+.gauge-caption.Low {
+  color: var(--safe);
+}
+.confidence-note {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 0;
+}
+.confidence-note strong {
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.prob-chart {
+  display: flex;
+  gap: 10px;
+  height: 150px;
+  margin: 0 0 10px;
+}
+.prob-chart-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  padding-bottom: 22px;
+  text-align: right;
+}
+.prob-chart-bars {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 16px;
+  border-left: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 0 6px;
+}
+.prob-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 8px;
+}
+.prob-bar {
+  width: 60%;
+  border-radius: 4px 4px 0 0;
+  background: var(--line);
+  opacity: 0.55;
+  transition: opacity 0.3s ease, box-shadow 0.3s ease;
+}
+.prob-bar.high {
+  background: red;
+}
+.prob-bar.medium {
+  background: yellow;
+}
+.prob-bar.low {
+  background: #59c26e;
+}
+.prob-bar.active {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--ink);
+}
+.prob-bar-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.impact-list {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+}
+.impact-list li {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.impact-list li:last-child {
+  border-bottom: none;
+}
+.impact-list .impact-name {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 0.88rem;
+  display: block;
+}
+.impact-list .impact-contribution {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.retention-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: left;
+}
+.retention-card .retention-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+.retention-card .retention-offer {
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ---------- Prediction result: desktop compact mode ----------
+   On wide screens the form and result sit side by side (see .layout
+   above); the result card was naturally taller than the form, which
+   meant scrolling to see the bottom of it even though the form fit
+   in one screen. Tightening spacing here (desktop only — the mobile
+   rules further down are untouched) brings its height in line with
+   the form's so both fit together without scrolling. */
+@media (min-width: 981px) {
+  body.page-predictor #verdict-result p {
+    margin: 0;
+  }
+  body.page-predictor #verdict-result .section-label {
+    margin: 16px 0 8px;
+  }
+  body.page-predictor #verdict-result .result-heading {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+  }
+  body.page-predictor #verdict-result .risk-gauge-wrap {
+    margin-bottom: 10px;
+  }
+  body.page-predictor #verdict-result .gauge-svg {
+    width: 160px;
+  }
+  body.page-predictor #verdict-result .gauge-figure {
+    font-size: 1.9rem;
+    margin: -12px 0 0;
+  }
+  body.page-predictor #verdict-result .prob-chart {
+    height: 100px;
+    margin-bottom: 4px;
+  }
+  body.page-predictor #verdict-result .hint {
+    font-size: 0.72rem;
+    line-height: 1.4;
+  }
+  body.page-predictor #verdict-result .impact-list li {
+    padding: 6px 0;
+  }
+  body.page-predictor #verdict-result .retention-card {
+    padding: 10px 14px;
+  }
+}
+
 .section-head-row {
   display: flex;
 
@@ -1321,8 +1555,11 @@ table.campaigns tbody tr:last-child td {
   .drivers-list .name {
     width: auto;
   }
+  .drivers-list .bar-track,
   .factors .bar-track {
+    flex: none;
     width: 100%;
+    height: 9px;
     margin: 0;
   }
   .factors .val {
@@ -1483,7 +1720,8 @@ body.page-dashboard .avatar {
 
 /* page-predictor */
 body.page-predictor main {
-  max-width: 1180px;
+  /* max-width: 1180px; */
+  overflow-x: hidden;
 }
 body.page-predictor .subhead {
   color: var(--muted);
@@ -1511,7 +1749,9 @@ body.page-predictor .section-label {
 
 /* page-analytics */
 body.page-analytics main {
-  max-width: 1280px;
+  /* max-width: 1280px; */
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 body.page-analytics header.page-head {
   margin-bottom: 28px;
@@ -1650,7 +1890,8 @@ body.page-performance .drivers-list .val {
 
 /* page-retention */
 body.page-retention main {
-  max-width: 1280px;
+  /* max-width: 1280px; */
+  overflow-x: hidden;
 }
 body.page-retention header.page-head {
   margin-bottom: 28px;
@@ -1735,23 +1976,23 @@ body.page-dashboard .grid-2 .card:nth-child(2):hover {
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
 }
 
-.donut-wrap {
+body.page-dashboard .donut-wrap {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 28px;
 }
 
-#donut-svg {
+body.page-dashboard #donut-svg {
   filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.08));
   transition: 0.3s;
 }
 
-#donut-svg:hover {
+body.page-dashboard #donut-svg:hover {
   transform: scale(1.05);
 }
 
-.donut-legend {
+body.page-dashboard .donut-legend {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -1761,7 +2002,7 @@ body.page-dashboard .grid-2 .card:nth-child(2):hover {
   width: 100%;
 }
 
-.donut-legend li {
+body.page-dashboard .donut-legend li {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1777,22 +2018,22 @@ body.page-dashboard .grid-2 .card:nth-child(2):hover {
   transition: 0.25s;
 }
 
-.donut-legend li:hover {
+body.page-dashboard .donut-legend li:hover {
   transform: translateX(5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
-.donut-legend .name {
+body.page-dashboard .donut-legend .name {
   flex: 1;
   font-weight: 600;
 }
 
-.donut-legend .count {
+body.page-dashboard .donut-legend .count {
   font-family: "IBM Plex Mono", monospace;
   color: var(--muted);
 }
 
-.swatch {
+body.page-dashboard .swatch {
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -1967,6 +2208,28 @@ body.page-dashboard .grid-2 .card:nth-child(2):hover {
     left: 0;
   }
 
+  .sidebar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px 16px;
+    gap: 20px;
+  }
+
+  nav.primary {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 4px;
+  }
+
+  nav.primary a {
+    width: 100%;
+    white-space: normal;
+    padding: 12px 14px;
+    font-size: 0.86rem;
+    justify-content: flex-start;
+  }
+
   .overlay {
     position: fixed;
     top: 0;
@@ -1984,71 +2247,304 @@ body.page-dashboard .grid-2 .card:nth-child(2):hover {
 }
 
 /* ==========================================================
-   Responsive integrity fixes
-   Several page-scoped selectors above (body.page-dashboard
-   .grid-2, .donut-wrap, etc.) are declared AFTER the mobile
-   breakpoints and match or exceed their specificity, so they
-   were silently winning the cascade and keeping two-column
-   layouts side-by-side on phones/tablets. Restating the
-   collapsed layout here — after those overrides, with the
-   same selectors — makes it actually stick. A couple of
-   sections (feature-importance rows, correlation heatmap)
-   never had mobile handling at all, so that's added too.
+   Per-page responsive overrides
+   ----------------------------------------------------------
+   The page-scoped rules earlier in this file (body.page-dashboard
+   .grid-2, body.page-analytics .grid-2, etc.) carry higher CSS
+   specificity than a plain, shared ".grid-2 {...}" mobile rule
+   would. Because of that, those two-column layouts kept winning
+   the cascade and stayed side-by-side even on small screens —
+   the pages "worked" with responsive but only partway.
+
+   Instead of one shared catch-all block, each page below gets
+   its own dedicated set of breakpoints, scoped with
+   body.page-<name>, tuned to that page's own component widths
+   (KPI rows, chart/legend pairs, tables, etc.). Breakpoints are
+   intentionally not identical across pages, since each page's
+   content needs to fold at a different width. Everything still
+   lives in this single stylesheet, just organized per page.
    ========================================================== */
 
-@media (max-width: 980px) {
-  .grid-2,
-  body.page-dashboard .grid-2,
-  body.page-analytics .grid-2,
-  body.page-performance .grid-2,
-  body.page-retention .grid-2 {
-    grid-template-columns: 1fr;
-  }
-  .demo-grid {
+/* ---------- Dashboard ---------- */
+@media (max-width: 1024px) {
+  body.page-dashboard .grid-2 {
     grid-template-columns: 1fr;
   }
 }
-
-@media (max-width: 760px) {
-  .donut-wrap {
+@media (max-width: 780px) {
+  body.page-dashboard header.page-head {
+    align-items: flex-start;
+  }
+  body.page-dashboard .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  body.page-dashboard .donut-wrap {
     flex-direction: column;
     align-items: flex-start;
   }
-  .factors li {
-    display: flex;
+  body.page-dashboard .drivers-list li {
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
   }
-  .factors .bar-track {
-    width: 100%;
-  }
-  .factors .val {
+  body.page-dashboard .drivers-list .name {
     width: auto;
   }
-  .heatmap-wrap {
+  body.page-dashboard .bar-track {
+    width: 100%;
+  }
+  body.page-dashboard .drivers-list .val {
+    width: auto;
+  }
+  body.page-dashboard table {
+    display: block;
+    width: 100%;
+    overflow: visible;
+    white-space: normal;
+  }
+  body.page-dashboard table thead {
+    display: none;
+  }
+  body.page-dashboard table tbody,
+  body.page-dashboard table tr,
+  body.page-dashboard table td {
+    display: block;
+    width: 100%;
+  }
+  body.page-dashboard table tr {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  body.page-dashboard table td {
+    border-bottom: none;
+    padding: 4px 0;
+  }
+  body.page-dashboard table td:first-child {
+    padding-top: 0;
+  }
+}
+@media (max-width: 480px) {
+  body.page-dashboard .kpi-row {
+    grid-template-columns: 1fr;
+  }
+  body.page-dashboard .kpi {
+    padding: 16px 18px;
+  }
+  body.page-dashboard .avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 0.7rem;
+  }
+}
+
+/* ---------- Customer Analytics ---------- */
+@media (max-width: 1040px) {
+  body.page-analytics .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  body.page-analytics .demo-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+@media (max-width: 780px) {
+  body.page-analytics header.page-head {
+    align-items: flex-start;
+  }
+  body.page-analytics .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  body.page-analytics .legend-row {
+    gap: 10px;
+  }
+  body.page-analytics .heatmap-wrap {
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  table.heatmap {
+  body.page-analytics table.heatmap {
     margin: 0;
+  }
+  body.page-analytics .demo-grid {
+    width: 100%;
+  }
+  body.page-analytics .demo-grid > div:first-child {
+    width: 100%;
+  }
+  body.page-analytics #demodonut-svg {
+    max-width: 100%;
+  }
+  body.page-analytics .donut-legend {
+    width: 100%;
+  }
+  body.page-analytics .donut-legend li {
+    flex-wrap: wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  body.page-analytics .donut-legend .name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  body.page-analytics .hbar-label {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 500px) {
+  body.page-analytics .kpi-row {
+    grid-template-columns: 1fr;
+  }
+  body.page-analytics .demo-grid > div:first-child {
+    gap: 16px;
+  }
+  body.page-analytics #demodonut-svg {
+    width: 170px;
+    height: 170px;
+  }
+  body.page-analytics .hbar-group {
+    gap: 16px;
   }
 }
 
-@media (max-width: 620px) {
-  .cm-wrap {
-    grid-template-columns: 56px 1fr 1fr;
+/* ---------- Model Performance ---------- */
+@media (max-width: 1000px) {
+  body.page-performance .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 740px) {
+  body.page-performance header.page-head {
+    align-items: flex-start;
+  }
+  body.page-performance h1 {
+    font-size: 1.6rem;
+  }
+  body.page-performance .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  body.page-performance .tvt-item .tvt-label {
+    font-size: 0.78rem;
+  }
+  body.page-performance .info-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  body.page-performance .info-list .v {
+    text-align: left;
+  }
+}
+@media (max-width: 460px) {
+  body.page-performance .kpi-row {
+    grid-template-columns: 1fr;
+  }
+  body.page-performance .cm-wrap {
+    grid-template-columns: 52px 1fr 1fr;
     gap: 4px;
   }
-  .cm-cell {
+  body.page-performance .cm-cell {
     padding: 10px 6px;
   }
-  .cm-cell .num {
+  body.page-performance .cm-cell .num {
     font-size: 1.1rem;
   }
-  .verdict-figure {
-    font-size: 1.7rem;
+}
+
+/* ---------- Retention Campaigns ---------- */
+@media (max-width: 980px) {
+  body.page-retention .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 720px) {
+  body.page-retention header.page-head {
+    align-items: flex-start;
+  }
+  body.page-retention .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  body.page-retention table.campaigns {
+    display: block;
+    width: 100%;
+    overflow: visible;
+    white-space: normal;
+  }
+  body.page-retention table.campaigns thead {
+    display: none;
+  }
+  body.page-retention table.campaigns tbody,
+  body.page-retention table.campaigns tr,
+  body.page-retention table.campaigns td {
+    display: block;
+    width: 100%;
+  }
+  body.page-retention table.campaigns tr {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  body.page-retention table.campaigns td {
+    border-bottom: none;
+    padding: 3px 0;
+  }
+  body.page-retention table.campaigns td:first-child {
+    padding-top: 0;
+  }
+  body.page-retention .queue-list li {
+    flex-wrap: wrap;
+  }
+  body.page-retention .queue-right {
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+@media (max-width: 440px) {
+  body.page-retention .kpi-row {
+    grid-template-columns: 1fr;
+  }
+  body.page-retention .section-head-row {
+    align-items: flex-start;
+  }
+  body.page-retention select.filter {
+    width: 100%;
+  }
+}
+
+/* ---------- Churn Predictor (unchanged responsive behavior) ---------- */
+@media (max-width: 760px) {
+  body.page-predictor .verdict {
+    padding: 24px 20px;
+  }
+  body.page-predictor .gauge-svg {
+    width: 180px;
+  }
+  body.page-predictor .impact-list li {
+    padding: 8px 0;
+  }
+}
+@media (max-width: 620px) {
+  body.page-predictor .gauge-svg {
+    width: 160px;
+  }
+  body.page-predictor .gauge-figure {
+    font-size: 1.9rem;
+  }
+  body.page-predictor .prob-chart {
+    height: 120px;
+    gap: 6px;
+  }
+  body.page-predictor .prob-chart-axis {
+    font-size: 0.62rem;
+  }
+  body.page-predictor .prob-chart-bars {
+    gap: 8px;
+    padding: 0 4px;
+  }
+  body.page-predictor .prob-bar-label {
+    font-size: 0.66rem;
+  }
+  body.page-predictor .retention-card {
+    padding: 12px 14px;
   }
 }

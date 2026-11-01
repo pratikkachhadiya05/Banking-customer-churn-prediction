@@ -14,7 +14,7 @@
 
 </head>
 
-<body class="page-dashboard">
+<body class="page-predictor">
   <div class="mobile-header">
 
     <button id="menuBtn" class="menu-btn">
@@ -124,7 +124,7 @@
 
         <aside class="card verdict">
           <p class="section-label">Verdict</p>
-          <div class="stamp-wrap">
+          <div class="stamp-wrap" id="stamp-wrap">
             <svg class="stamp" id="stamp" viewBox="0 0 150 150">
               <circle class="ring" cx="75" cy="75" r="66" stroke-dasharray="6 5"></circle>
               <circle class="ring" cx="75" cy="75" r="58"></circle>
@@ -139,14 +139,55 @@
           </div>
 
           <div id="verdict-result" style="display:none;">
-            <p class="verdict-figure" id="prob-figure">0<span>% churn probability</span></p>
-            <p class="verdict-caption" id="verdict-caption">&nbsp;</p>
-            <span class="risk-badge" id="risk-badge">—</span>
+            <p class="result-heading">Prediction Result</p>
 
-            <p class="section-label">What generally drives this</p>
-            <ul class="factors" id="factors-list"></ul>
-            <p class="hint" style="text-align:left; margin-top:10px;">Ranked by the model's overall feature importance —
-              a reference, not a per-customer breakdown.</p>
+            <div class="risk-gauge-wrap">
+              <p class="gauge-title">Churn Risk Score</p>
+              <svg class="gauge-svg" viewBox="0 0 200 120">
+                <path class="gauge-track-seg low" d="M 20,110 A 80,80 0 0 1 60,40.72"></path>
+                <path class="gauge-track-seg medium" d="M 60,40.72 A 80,80 0 0 1 140,40.72"></path>
+                <path class="gauge-track-seg high" d="M 140,40.72 A 80,80 0 0 1 180,110"></path>
+                <g id="gauge-needle-group" transform="rotate(-90 100 110)">
+                  <line class="gauge-needle" x1="100" y1="110" x2="100" y2="38"></line>
+                </g>
+                <circle class="gauge-pivot" cx="100" cy="110" r="6"></circle>
+              </svg>
+              <p class="gauge-figure" id="prob-figure">0<span>%</span></p>
+              <p class="gauge-caption" id="risk-caption">—</p>
+              <p class="confidence-note">Model confidence: <strong id="model-confidence">—</strong></p>
+            </div>
+
+            <p class="section-label">Estimated churn probability</p>
+            <div class="prob-chart">
+              <div class="prob-chart-axis">
+                <span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
+              </div>
+              <div class="prob-chart-bars">
+                <div class="prob-bar-col">
+                  <div class="prob-bar high" id="bar-high" style="height:82%"></div>
+                  <span class="prob-bar-label">High</span>
+                </div>
+                <div class="prob-bar-col">
+                  <div class="prob-bar medium" id="bar-medium" style="height:45%"></div>
+                  <span class="prob-bar-label">Medium</span>
+                </div>
+                <div class="prob-bar-col">
+                  <div class="prob-bar low" id="bar-low" style="height:18%"></div>
+                  <span class="prob-bar-label">Low</span>
+                </div>
+              </div>
+            </div>
+            <p class="hint" style="text-align:left; margin:0 0 20px;">Bars are reference thresholds for each risk
+              tier; the highlighted one matches this customer.</p>
+
+            <p class="section-label">Predictive factors impact</p>
+            <ul class="impact-list" id="factors-list"></ul>
+
+            <p class="section-label">Recommended retention campaign</p>
+            <div class="retention-card">
+              <p class="retention-label">Personalized offer</p>
+              <p class="retention-offer" id="retention-offer">—</p>
+            </div>
           </div>
         </aside>
       </div>
@@ -160,13 +201,19 @@
     const submitBtn = document.getElementById('submit-btn');
     const formError = document.getElementById('form-error');
     const stamp = document.getElementById('stamp');
+    const stampWrap = document.getElementById('stamp-wrap');
     const stampLine1 = document.getElementById('stamp-line1');
     const stampLine2 = document.getElementById('stamp-line2');
     const verdictEmpty = document.getElementById('verdict-empty');
     const verdictResult = document.getElementById('verdict-result');
     const probFigure = document.getElementById('prob-figure');
-    const verdictCaption = document.getElementById('verdict-caption');
-    const riskBadge = document.getElementById('risk-badge');
+    const riskCaption = document.getElementById('risk-caption');
+    const modelConfidence = document.getElementById('model-confidence');
+    const gaugeNeedleGroup = document.getElementById('gauge-needle-group');
+    const barHigh = document.getElementById('bar-high');
+    const barMedium = document.getElementById('bar-medium');
+    const barLow = document.getElementById('bar-low');
+    const retentionOffer = document.getElementById('retention-offer');
     const factorsList = document.getElementById('factors-list');
     const menuBtn = document.getElementById("menuBtn");
     const sidebar = document.getElementById("sidebar");
@@ -351,52 +398,70 @@
 
     });
 
+    // Suggested campaign, based on risk tier and the single biggest driver
+    // for this customer — mirrors the "Retention offer by segment" table on
+    // the Customer Analytics page, just applied per-prediction here.
+    function recommendOffer(riskLevel, topFactorLabel) {
+      const label = (topFactorLabel || '').toLowerCase();
+      if (riskLevel === 'High') {
+        if (label.includes('balance')) return 'New High-Yield Savings Account';
+        if (label.includes('product')) return 'Multi-product bundle discount';
+        if (label.includes('activity')) return 'Priority relationship-manager outreach';
+        if (label.includes('credit')) return 'Credit line review & fee waiver';
+        return 'Personalized retention outreach call';
+      }
+      if (riskLevel === 'Medium') {
+        return 'Loyalty welcome bonus';
+      }
+      return 'No action needed — monitor next cycle';
+    }
+
     function renderResult(data) {
       clearErrors();
       verdictEmpty.style.display = 'none';
+      stampWrap.style.display = 'none';
       verdictResult.style.display = 'block';
 
       const isRisk = data.prediction === 1;
-      stamp.classList.remove('ready', 'risk', 'safe');
-      // force reflow so the animation replays on repeated submits
-      void stamp.offsetWidth;
-      stamp.classList.add(isRisk ? 'risk' : 'safe');
-      stampLine1.textContent = isRisk ? 'AT RISK' : 'RETAINED';
-      stampLine2.textContent = isRisk ? 'FLAG FOR OUTREACH' : 'NO ACTION NEEDED';
-      requestAnimationFrame(() => stamp.classList.add('ready'));
+      const probability = data.churn_probability;
 
-      probFigure.innerHTML = data.churn_probability + '<span>% churn probability</span>';
-      verdictCaption.textContent = isRisk
-        ? 'This customer looks likely to leave.'
-        : 'This customer looks likely to stay.';
-      riskBadge.textContent = data.risk_level + ' risk';
-      riskBadge.className = 'risk-badge ' + data.risk_level;
+      // Gauge needle: 0% probability -> -90deg (pointing to the green end),
+      // 100% -> +90deg (pointing to the red end).
+      const angle = (probability / 100) * 180 - 90;
+      gaugeNeedleGroup.setAttribute('transform', `rotate(${angle} 100 110)`);
+
+      probFigure.innerHTML = probability + '<span>%</span>';
+      riskCaption.textContent = '(' + data.risk_level + ' Risk)';
+      riskCaption.className = 'gauge-caption ' + data.risk_level;
+
+      // Backend doesn't return a confidence figure yet — fall back to a
+      // reasonable proxy (distance from the 50/50 line) until it does.
+      const confidence = (typeof data.model_confidence === 'number')
+        ? data.model_confidence
+        : Math.round(50 + Math.abs(probability - 50));
+      modelConfidence.textContent = confidence + '%';
+
+      [barHigh, barMedium, barLow].forEach(b => b.classList.remove('active'));
+      if (data.risk_level === 'High') barHigh.classList.add('active');
+      else if (data.risk_level === 'Medium') barMedium.classList.add('active');
+      else barLow.classList.add('active');
 
       factorsList.innerHTML = '';
-
-      const maxImportance = Math.max(
-        ...data.top_factors.map(f => f.importance)
-      );
-
       data.top_factors.forEach(f => {
-
-        const width = (f.importance / maxImportance) * 100;
-
-        const li = document.createElement("li");
-
+        const li = document.createElement('li');
         li.innerHTML = `
-        <span class="factor-name">${f.label}</span>
-
-        <span class="bar-track">
-            <span class="bar-fill" style="width:${width}%"></span>
-        </span>
-
-        <span class="val">${f.importance}%</span>
-    `;
-
+        <span class="impact-name">${f.label}</span>
+        <span class="impact-contribution">(${f.importance}% contribution)</span>`;
         factorsList.appendChild(li);
       });
 
+      const topLabel = data.top_factors.length ? data.top_factors[0].label : '';
+      retentionOffer.textContent = recommendOffer(data.risk_level, topLabel);
+
+      stamp.classList.remove('ready', 'risk', 'safe');
+      stamp.classList.add(isRisk ? 'risk' : 'safe');
+      stampLine1.textContent = isRisk ? 'AT RISK' : 'RETAINED';
+      stampLine2.textContent = isRisk ? 'FLAG FOR OUTREACH' : 'NO ACTION NEEDED';
     }
     // New Prediction button
     document.getElementById("reset-btn").addEventListener("click", () => {
@@ -413,14 +478,19 @@
         row.querySelector('button[data-value="1"]').classList.add("on");
       });
 
-      // Hide previous prediction
+      // Hide previous prediction, bring back the pending stamp
       verdictResult.style.display = "none";
       verdictEmpty.style.display = "block";
+      stampWrap.style.display = "flex";
 
       // Reset stamp
       stamp.className = "stamp";
       stampLine1.textContent = "PENDING";
       stampLine2.textContent = "AWAITING FILE";
+
+      // Reset gauge needle and reference bars for the next run
+      gaugeNeedleGroup.setAttribute('transform', 'rotate(-90 100 110)');
+      [barHigh, barMedium, barLow].forEach(b => b.classList.remove('active'));
 
       // Clear error message
       formError.style.display = "none";
